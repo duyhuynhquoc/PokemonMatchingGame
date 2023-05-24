@@ -1,3 +1,6 @@
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.PriorityQueue;
 import java.util.Scanner;
 
@@ -16,6 +19,7 @@ public class PokemonMatchingGame {
     private static int M = 5;
 
     private static boolean[][] visited = new boolean[10][10];
+    private static IntPair[][] trace = new IntPair[10][10];
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -44,7 +48,10 @@ public class PokemonMatchingGame {
             y2 = sc.nextInt();
 
             visited = new boolean[10][10];
+            trace = new IntPair[10][10];
+
             IntPair res = dijkstra(x1, y1, x2, y2);
+
             int result = res.x;
             int turn = res.y;
             System.out.println("Path length: " + result + ", Turn: " + turn);
@@ -52,6 +59,7 @@ public class PokemonMatchingGame {
                 board[x1][y1] = 0;
                 board[x2][y2] = 0;
             }
+            printTrace(x1, y1, x2, y2);
             printBoard();
         }
     }
@@ -62,6 +70,18 @@ public class PokemonMatchingGame {
                 System.out.print(board[i][j] + " ");
             }
             System.out.println();
+        }
+    }
+
+    private static void printTrace(int x1, int y1, int x2, int y2){
+        IntPair current = new IntPair(x2, y2);
+        ArrayList<IntPair> path = new ArrayList<>();
+        while (current != null) {
+            path.add(0, current);
+            current = trace[current.x][current.y];
+        }
+        for (IntPair node: path) {
+            System.out.println("(" + node.x + ", " + node.y + ")");
         }
     }
 
@@ -112,6 +132,7 @@ public class PokemonMatchingGame {
 
                     if (d[x][y] > du + 1) {
                         d[x][y] = du + 1;
+                        trace[x][y] = new IntPair(u.x, u.y);
 
                         if (currentDirection != null && nextDirection != currentDirection) {
                             pq.add(new HeapItem(d[x][y], nextDirection, turn + 1, new IntPair(x, y)));
